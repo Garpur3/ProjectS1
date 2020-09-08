@@ -45,26 +45,29 @@ public class Percolation {
         if(grid[col][row] == false) {
             grid[col][row] = true;
             openSites++;
-            if(row == 0) {
+            if(row == 0)
                 topRow.add(col);
-                checkPercolation();
-            }
-            else if(row == gridSize - 1) {
+
+            else if(row == gridSize - 1)
                 botRow.add(col + gridSize*(gridSize - 1));
-                checkPercolation();
-            }
+
             checkSurroundings(row, col);
+
+            if(row == 0 || row == gridSize - 1)
+                checkPercolation();
         }
     }
 
-    public void checkPercolation() {
+    private void checkPercolation() {
         if(topRow.size() > 0 && botRow.size() > 0) {
             Iterator<Integer> top, bot;
             top = topRow.iterator();
             while (top.hasNext()) {
                 bot = botRow.iterator();
+                int tSite = top.next();
                 while (bot.hasNext()) {
-                    if (path.find(top.next()) == path.find(bot.next()))
+                    int bSite = bot.next();
+                    if (path.find(tSite) == path.find(bSite))
                         percolates = true;
                 }
             }
