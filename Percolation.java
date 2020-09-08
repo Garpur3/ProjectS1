@@ -30,19 +30,22 @@ public class Percolation {
 
     private void checkGrid(int n) {
         if(n < 1)
-            throw new java.lang.IndexOutOfBoundsException();
+            throw new java.lang.IllegalArgumentException();
     }
 
     private void checkSize(int row, int col) {
-        if (row < 0 || col < 0 || row > gridSize - 1 || col > gridSize - 1)
+        if(row < 0 || col < 0 || row > gridSize - 1 || col > gridSize - 1)
             throw new java.lang.IndexOutOfBoundsException();
     }
 
     public void open(int row, int col) {
         checkSize(row, col);
 
-        if(gridSize == 1)
+        if(gridSize == 1) {
+            grid[0][0] = true;
             percolates = true;
+            openSites++;
+        }
 
         else if(grid[col][row] == false) {
             grid[col][row] = true;
@@ -61,12 +64,12 @@ public class Percolation {
         if(topRow.size() > 0 && botRow.size() > 0) {
             Iterator<Integer> top, bot;
             top = topRow.iterator();
-            while (top.hasNext()) {
+            while(top.hasNext()) {
                 bot = botRow.iterator();
                 int tSite = top.next();
-                while (bot.hasNext()) {
+                while(bot.hasNext()) {
                     int bSite = bot.next();
-                    if (path.find(tSite) == path.find(bSite))
+                    if(path.find(tSite) == path.find(bSite))
                         percolates = true;
                 }
             }
@@ -74,11 +77,25 @@ public class Percolation {
     }
 
     public boolean isOpen(int row, int col) {
+        checkSize(row, col);
         return grid[col][row];
     }
 
     public boolean isFull(int row, int col) {
-        return grid[col][row];
+        checkSize(row, col);
+
+        if(gridSize == 1)
+            return isOpen(row, col);
+
+        int siteRoot = path.find(col + row*gridSize);
+        if(topRow.size() > 0) {
+            Iterator<Integer> top = topRow.iterator();
+            while(top.hasNext()) {
+                if(siteRoot == path.find(top.next()))
+                    return true;
+            }
+        }
+        return false;
     }
 
     public int numberOfOpenSites() {
@@ -112,5 +129,9 @@ public class Percolation {
             }
         }
         checkPercolation();
+    }
+
+    public static void main(String[] args) {
+
     }
 }
