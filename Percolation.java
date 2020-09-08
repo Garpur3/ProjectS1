@@ -40,7 +40,11 @@ public class Percolation {
 
     public void open(int row, int col) {
         checkSize(row, col);
-        if(grid[col][row] == false) {
+
+        if(gridSize == 1)
+            percolates = true;
+
+        else if(grid[col][row] == false) {
             grid[col][row] = true;
             openSites++;
             if(row == 0)
