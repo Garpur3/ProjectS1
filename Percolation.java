@@ -2,7 +2,6 @@ import edu.princeton.cs.algs4.LinkedBag;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.util.Iterator;
-import java.util.PrimitiveIterator;
 
 public class Percolation {
 
@@ -19,7 +18,7 @@ public class Percolation {
     private boolean percolates;
 
     public Percolation(int n) {
-        checkSize(n, n);
+        checkGrid(n);
         gridSize = n;
         grid = new boolean[n][n];
         openSites = 0;
@@ -29,15 +28,14 @@ public class Percolation {
         percolates = false;
     }
 
-    private void checkSize(int row, int col) {
-        if (row < 0 || col < 0) {
+    private void checkGrid(int n) {
+        if(n < 1)
             throw new java.lang.IndexOutOfBoundsException();
-        }
-        else if (gridSize > 0) {
-            if (row > gridSize - 1 || col > gridSize - 1) {
-                throw new java.lang.IndexOutOfBoundsException();
-            }
-        }
+    }
+
+    private void checkSize(int row, int col) {
+        if (row < 0 || col < 0 || row > gridSize - 1 || col > gridSize - 1)
+            throw new java.lang.IndexOutOfBoundsException();
     }
 
     public void open(int row, int col) {
@@ -52,9 +50,6 @@ public class Percolation {
                 botRow.add(col + gridSize*(gridSize - 1));
 
             checkSurroundings(row, col);
-
-            if(row == 0 || row == gridSize - 1)
-                checkPercolation();
         }
     }
 
@@ -112,9 +107,6 @@ public class Percolation {
 
             }
         }
-    }
-
-    public static void main(String[] args) {
-
+        checkPercolation();
     }
 }
