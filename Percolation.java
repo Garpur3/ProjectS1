@@ -1,32 +1,29 @@
-import edu.princeton.cs.algs4.LinkedBag;
+import edu.princeton.cs.algs4.QuickFindUF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-
-import java.util.Iterator;
 
 public class Percolation {
 
-    private int gridSize;
+    private int gridSize, openSites;
 
+    //Keeps track of whether site is open or not
     private boolean[][] grid;
-
-    private int openSites;
 
     private boolean percolates;
 
     private WeightedQuickUnionUF path;
 
-    //Used when checking whether percolation is present
-    private LinkedBag<Integer> topRow, botRow;
+    //Used when checking whether percolation is present or site is full
+    private boolean[] topRow, botRow;
 
     public Percolation(int n) {
         checkGrid(n);
         gridSize = n;
-        grid = new boolean[n][n];
         openSites = 0;
+        grid = new boolean[n][n];
         percolates = false;
         path = new WeightedQuickUnionUF(n*n);
-        topRow = new LinkedBag<>();
-        botRow = new LinkedBag<>();
+        topRow = new boolean[n];
+        botRow = new boolean[n];
     }
 
     private void checkGrid(int n) {
@@ -50,9 +47,9 @@ public class Percolation {
 
             //Keeps track of open sites in top and bottom row
             if(row == 0)
-                topRow.add(col);
+                topRow[col] = true;
             else if(row == gridSize - 1)
-                botRow.add(col + gridSize*(gridSize - 1));
+                botRow[col] = true;
 
             checkSurroundings(row, col);
         }
@@ -72,7 +69,7 @@ public class Percolation {
     }
 
     //Creates union for sites adjacent if they exist and are open
-    private void checkSurroundings(int row, int col){
+    private void checkSurroundings(int row, int col) {
         int site = col + row*gridSize;
 
         int[][] offset = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
@@ -94,11 +91,10 @@ public class Percolation {
     }
 
     private void checkPercolation() {
-        Iterator<Integer> bot = botRow.iterator();
-        while(!percolates && bot.hasNext()) {
-            int bSite = bot.next();
-            int col = bSite % gridSize;
-            percolates = isFull(gridSize - 1, col);
+        //If percolation is already present or has just occurred, we don't want to update percolates
+        for(int i = 0; i < gridSize && !percolates; i++) {
+            if(botRow[i])
+                percolates = isFull(gridSize - 1, i);
         }
     }
 
@@ -113,13 +109,11 @@ public class Percolation {
 
         checkSite(row, col);
 
-        if(topRow.size() > 0) {
-            int siteRoot = path.find(col + row*gridSize);
+        int siteRoot = path.find(col + row*gridSize);
 
-            Iterator<Integer> top = topRow.iterator();
-
-            while(top.hasNext()) {
-                if(siteRoot == path.find(top.next()))
+        for(int i = 0; i < gridSize; i++) {
+            if(topRow[i]) {
+                if(siteRoot == path.find(i))
                     return true;
             }
         }
